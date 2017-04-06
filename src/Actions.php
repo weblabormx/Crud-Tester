@@ -13,8 +13,13 @@ trait Actions {
     // Using in all
     public function redirects_if_not_logged($action) {
         $url = $this->getUrl($action);
-        $this->visit($url)
-            ->seePageIs('login');
+        $this->visit($url);
+        try {
+            $this->seePageIs('login');
+        } catch (\Exception $e) {
+            throw new \Exception("Must redirect if is not logged", 1);
+        }
+        
 
         echo "\n- redirects_if_not_logged in $url checked\n";
     }
@@ -224,12 +229,14 @@ trait Actions {
         $count = $this->{$this->configuration['object_relationship']}->{$this->configuration['function_relationship']}()->count();
         $count--;
 
-        $url = $this->getUrl($action);
+        $this->call('DELETE', $action, []);
+
+        /*$url = $this->getUrl($action);
         $this->actingAs($this->user);
         $this->visit($url);
         $this->press('Eliminar')
              ->see('Eliminado correctamente');
-        echo "\n-- successfull message is shown ready";
+        echo "\n-- successfull message is shown ready";*/
 
         $this->assertEquals($count, $this->{$this->configuration['object_relationship']}->{$this->configuration['function_relationship']}()->first()->active);
         echo "\n-- cheking that object was created successfully ready";

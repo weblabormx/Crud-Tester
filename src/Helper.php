@@ -7,7 +7,7 @@ trait Helper {
     public function getUrl($action, $id =  null, $store_id = null) {
         if(is_null($id))
             $id = $this->configuration['module_object']->id;
-        if(is_null($store_id))
+        if(is_null($store_id) && $this->configuration['inside_store'])
             $store_id = $this->store->id;
 
         $url = $this->configuration['url_base'];
@@ -22,7 +22,7 @@ trait Helper {
                 $url .= '{id}/edit';
                 break;
             case 'remove':
-                $url .= '{id}/remove';
+                $url .= '{id}';
                 break;
             case 'show':
                 $url .= '{id}';
