@@ -17,7 +17,7 @@ trait Actions {
         try {
             $this->seePageIs('login');
         } catch (\Exception $e) {
-            throw new \Exception("Must redirect if is not logged", 1);
+            $this->fail("Must redirect if is not logged");
         }
         
 
