@@ -53,7 +53,6 @@ trait CrudTester {
 
     public function remove() {
         $action = 'remove';
-        $this->commonStart($action);
         $this->remove_show_successfull_mesagge_and_is_saved($action);
 
         if (!$this->configuration['others_can_see']) {

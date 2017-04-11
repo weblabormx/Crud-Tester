@@ -91,13 +91,18 @@ trait Actions {
         foreach ($user_case as $key => $value) {
             $this->getInputMethod($key, $value);
         }
-        $this->press('Crear')
-             ->seePageIs($this->getUrl('index'));
+        $this->press('Crear');
 
         try {
            $this->see('Creado correctamente');
         } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
             $this->fail("'Creado correctamente' text should appear after submit in $url");
+        }
+        
+        try {
+           $this->seePageIs($this->getUrl('index'));
+        } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+            $this->fail("When saving should redirect to index page");
         }
              
         echo "\n-- successfull message is shown ready";
@@ -169,7 +174,7 @@ trait Actions {
             try {
                 $this->see($value_parent['title'].' es requerido');
             } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
-                $this->fail("'".$value_parent['title']." es requerido' text should be shown without $key_parent in $url");
+                $this->fail("'".$value_parent['title']." es requerido' text should be shown in $url");
             }
 
             echo "\n-- the form shows that $key_parent is required in $url ready";
@@ -189,8 +194,13 @@ trait Actions {
         $url = $this->getUrl($action);
 
         $this->actingAs($user);
-        $this->get($url)
-            ->assertResponseStatus(403);
+        $this->get($url);
+        try {
+            $this->assertResponseStatus(403);
+        } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+            $this->fail("another user must not access to $url");
+        }
+            
 
          echo "\n- check_if_another_user_cannot_enter in $url checked\n";
     }
@@ -217,7 +227,12 @@ trait Actions {
 
         $new_user_cases = $this->get_user_cases_that_arent_selects($user_cases);
         foreach ($new_user_cases as $key => $value) {
-            $this->see($value);
+            
+            try {
+               $this->see($value);
+            } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+                $this->fail("'$value' was not shown in $url ");
+            }
         }
         echo "\n-- cheking that object was created successfully ready";
 
@@ -241,7 +256,7 @@ trait Actions {
         $this->assertEquals($count, $this->{$this->configuration['object_relationship']}->{$this->configuration['function_relationship']}()->first()->active);
         echo "\n-- cheking that object was created successfully ready";
 
-        echo "\n\n- remove_show_successfull_mesagge_and_is_saved in $url checked\n";
+        echo "\n\n- remove_show_successfull_mesagge_and_is_saved checked\n";
     }
 
     // Using in show
