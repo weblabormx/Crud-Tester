@@ -270,9 +270,14 @@ trait Actions {
             if(isset($array['options'][$value]))
                 $value = $array['options'][$value];
             try {
-               $this->see($value);
+                $this->see($value);
             } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
-                $this->fail("'{$value}' text ({$field}) should appear in $url");
+                try {
+                    $value = number_format($value, 0);
+                    $this->see($value);
+                } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+                    $this->fail("'{$value}' text ({$field}) should appear in $url");
+                }
             }
             echo "\n-- checking that $field is in $url ready";
         }
