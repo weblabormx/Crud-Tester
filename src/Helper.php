@@ -9,7 +9,9 @@ trait Helper {
             $id = $this->configuration['module_object']->id;
         if(is_null($store_id) && $this->configuration['inside_store'])
             $store_id = $this->store->id;
-
+        if(isset($this->configuration['force_id_link']))
+            $id = $this->configuration['force_id_link'];
+        
         $url = $this->configuration['url_base'];
         $url = str_replace('{module}', $this->configuration['module'], $url);
         $url = str_replace('{store}', $store_id, $url);
