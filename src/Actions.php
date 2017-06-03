@@ -82,8 +82,13 @@ trait Actions {
 
     // Using in add
     public function add_show_successfull_mesagge_and_is_saved($action, $user_case) {
-        $count = $this->{$this->configuration['object_relationship']}->{$this->configuration['function_relationship']}()->count();
-        $count++;
+        if(
+            !isset($this->configuration['validate_relationship']) || 
+            $this->configuration['validate_relationship']) 
+        {
+            $count = $this->{$this->configuration['object_relationship']}->{$this->configuration['function_relationship']}()->count();
+            $count++;
+        }
 
         $url = $this->getUrl($action);
         $this->actingAs($this->user);
@@ -93,21 +98,30 @@ trait Actions {
         }
         $this->press('Crear');
 
-        try {
            $this->see('Creado correctamente');
-        } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
-            $this->fail("'Creado correctamente' text should appear after submit in $url");
-        }
+       
         
-        try {
-           $this->seePageIs($this->getUrl('index'));
-        } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
-            $this->fail("When saving should redirect to index page");
+        if(
+            !isset($this->configuration['redirect_to_index']) || 
+            $this->configuration['redirect_to_index']) 
+        {
+            try {
+               $this->seePageIs($this->getUrl('index'));
+            } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+                $this->fail("When saving should redirect to index page");
+            }
         }
+            
              
         echo "\n-- successfull message is shown ready";
 
-        $this->assertEquals($count, $this->{$this->configuration['object_relationship']}->{$this->configuration['function_relationship']}()->count());
+        if(
+            !isset($this->configuration['validate_relationship']) || 
+            $this->configuration['validate_relationship']) 
+        {
+            $this->assertEquals($count, $this->{$this->configuration['object_relationship']}->{$this->configuration['function_relationship']}()->count());
+        }
+        
         echo "\n-- cheking that object was created successfully ready";
 
         echo "\n\n- add_show_successfull_mesagge_and_is_saved in $url checked\n";

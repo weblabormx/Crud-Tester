@@ -72,8 +72,10 @@ trait CrudTester {
     }
 
     public function index($columns= [], $actions = []) {
-        if(count($actions)==0) {
+        if(is_array($actions) && count($actions)==0) {
             $actions = ['show', 'update', 'remove', 'add'];
+        } else {
+            $actions = [];
         }
 
         $action = 'index';
