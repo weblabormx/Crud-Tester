@@ -18,10 +18,23 @@ trait CrudTester {
             'others_can_see' => false,
             'url_base' => 'admin/{module}/',
             'redirect_to_index' => true,
-            'must_be_logged' => true
+            'must_be_logged' => true,
+            'links' => [
+                'add' => 'create',          // GET
+                'update' => '{id}/edit',    // GET
+                'remove' => '{id}',         // REMOVE
+                'show' => '{id}',           // GET
+                'index' => ''               // GET
+            ]
         ];
+        if(isset($configuration['links']))
+            $links = array_merge($default_configuration['links'], $configuration['links']);
+        
         $configuration = array_merge($default_configuration, $configuration);
-
+        
+        if(isset($links))
+            $configuration['links'] = $links;
+        //dd($configuration['links']);
         // Validation
         if(
             !isset($configuration['module']) ||
@@ -90,7 +103,7 @@ trait CrudTester {
     }
 
     public function index($columns= [], $actions = []) {
-        
+
         if(is_array($actions) && count($actions)==0) {
             $actions = ['show', 'update', 'remove', 'add'];
         } elseif (!is_array($actions)) {

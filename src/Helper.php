@@ -18,26 +18,10 @@ trait Helper {
         
         $url = str_replace('{module}', $this->configuration['module'], $url);
         $url = str_replace('{store}', $store_id, $url);
-        
-        switch ($action) {
-            case 'add':
-                $url .= 'create';
-                break;
-            case 'update':
-                $url .= '{id}/edit';
-                break;
-            case 'remove':
-                $url .= '{id}';
-                break;
-            case 'show':
-                $url .= '{id}';
-                break;
-            case 'index':
-                $url .= '';
-                break;
-            default:
-                $url .= '{id}/'.$action;
-                break;
+        if(array_key_exists($action, $this->configuration['links'])) {
+            $url .= $this->configuration['links'][$action];
+        } else {
+            $url .= '{id}/'.$action;
         }
         $url = str_replace('{id}', $id, $url);
         return $url;
