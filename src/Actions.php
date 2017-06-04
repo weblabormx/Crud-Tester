@@ -82,10 +82,7 @@ trait Actions {
 
     // Using in add
     public function add_show_successfull_mesagge_and_is_saved($action, $user_case) {
-        if(
-            !isset($this->configuration['validate_relationship']) || 
-            $this->configuration['validate_relationship']) 
-        {
+        if( $this->configuration['validate_relationship']) {
             $count = $this->{$this->configuration['object_relationship']}->{$this->configuration['function_relationship']}()->count();
             $count++;
         }
@@ -114,12 +111,8 @@ trait Actions {
              
         echo "\n-- successfull message is shown ready";
 
-        if(
-            !isset($this->configuration['validate_relationship']) || 
-            $this->configuration['validate_relationship']) 
-        {
+        if( $this->configuration['validate_relationship'])
             $this->assertEquals($count, $this->{$this->configuration['object_relationship']}->{$this->configuration['function_relationship']}()->count());
-        }
         
         echo "\n-- cheking that object was created successfully ready";
 
@@ -254,6 +247,8 @@ trait Actions {
 
     // Using in remove
     public function remove_show_successfull_mesagge_and_is_saved($action) {
+        if( !$this->configuration['validate_relationship'])
+            return;
         $count = $this->{$this->configuration['object_relationship']}->{$this->configuration['function_relationship']}()->count();
         $count--;
 
@@ -383,6 +378,9 @@ trait Actions {
         $functions = $this->get_fields_with_function_of_relationships();
         if(count($functions)==0)
             return;
+
+        if( !$this->configuration['validate_relationship'])
+            return; 
 
         $objects = $this->{$this->configuration['object_relationship']}->{$this->configuration['function_relationship']}();
         $last = $objects->orderBy('id', 'DESC')->first();
