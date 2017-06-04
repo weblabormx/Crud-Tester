@@ -94,8 +94,7 @@ trait Actions {
             $this->getInputMethod($key, $value);
         }
         $this->press('Crear');
-
-           $this->see('Creado correctamente');
+        $this->see('Creado correctamente');
        
         
         if(
@@ -233,7 +232,6 @@ trait Actions {
 
         $new_user_cases = $this->get_user_cases_that_arent_selects($user_cases);
         foreach ($new_user_cases as $key => $value) {
-            
             try {
                $this->see($value);
             } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
