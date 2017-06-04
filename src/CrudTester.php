@@ -28,7 +28,13 @@ trait CrudTester {
             ($configuration['validate_relationship'] && !isset($configuration['object_relationship'])) ||
             ($configuration['validate_relationship'] && !isset($configuration['function_relationship']))
         )
-            throw new Exception("Error, necessary fields were not added.", 1);
+            throw new \Exception("Error, necessary fields were not added.", 1);
+        
+        if(!$configuration['others_can_see'] && !isset($this->another_user))
+            throw new \Exception('You should create a $this->another_user variable to use "others_can_see" option', 1);
+
+        if(!isset($configuration['url_link']))
+            $configuration['url_link'] = $configuration['url_base'];
         
         // Saving    
         $this->configuration = $configuration;
@@ -96,7 +102,7 @@ trait CrudTester {
     public function index($columns= [], $actions = []) {
         if(is_array($actions) && count($actions)==0) {
             $actions = ['show', 'update', 'remove', 'add'];
-        } else {
+        } elseif (!is_array($actions)) {
             $actions = [];
         }
 

@@ -4,7 +4,7 @@ namespace WeblaborMX\CrudTester;
 
 trait Helper {
 
-    public function getUrl($action, $id =  null, $store_id = null) {
+    public function getUrl($action, $id =  null, $store_id = null, $is_link = false) {
         if(is_null($id))
             $id = $this->configuration['module_object']->id;
         if(is_null($store_id) && $this->configuration['inside_store'])
@@ -13,6 +13,9 @@ trait Helper {
             $id = $this->configuration['force_id_link'];
         
         $url = $this->configuration['url_base'];
+        if($is_link)
+            $url = $this->configuration['url_link'];
+        
         $url = str_replace('{module}', $this->configuration['module'], $url);
         $url = str_replace('{store}', $store_id, $url);
         
@@ -31,6 +34,9 @@ trait Helper {
                 break;
             case 'index':
                 $url .= '';
+                break;
+            default:
+                $url .= '{id}/'.$action;
                 break;
         }
         $url = str_replace('{id}', $id, $url);

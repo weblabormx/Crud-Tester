@@ -334,7 +334,7 @@ trait Actions {
     
         foreach ($actions as $action) {
             try {
-               $this->see($this->getUrl($action));
+               $this->see($this->getUrl($action, null, null, true));
             } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
                 $this->fail("'".$this->getUrl($action)."' url ({$action}) should appear in $url");
             }           
