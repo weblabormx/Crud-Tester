@@ -12,6 +12,9 @@ trait Actions {
 
     // Using in all
     public function redirects_if_not_logged($action) {
+        if(!$this->configuration['must_be_logged'])
+            return;
+
         $url = $this->getUrl($action);
         $this->visit($url);
         try {
@@ -20,31 +23,16 @@ trait Actions {
             $this->fail("Must redirect if is not logged");
         }
         
-
         echo "\n- redirects_if_not_logged in $url checked\n";
-    }
-
-    // Using if inside_store is true
-    public function redirects_if_isnt_store($action) {
-        $store = $this->createStore(['user_id' => $this->another_user->id]);
-        $url = $this->getUrl($action, null, $store->id);
-
-        $this->actingAs($this->user);
-        $this->get($url);
-        try {
-           $this->assertResponseStatus(403);
-        } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
-            $this->fail("the page should redirect if a user enter in a store that dont have permission in $url");
-        }
-            
-
-        echo "\n- redirects_if_isnt_store in $url checked\n";
     }
 
     // Using in add and update
     public function all_inputs_are_in_the_form($action) {
         $url = $this->getUrl($action);
-        $this->actingAs($this->user);
+        
+        if($this->configuration['must_be_logged'])
+            $this->actingAs($this->user);
+        
         $this->visit($url);
 
         foreach ($this->fields as $key => $array) {
@@ -61,7 +49,10 @@ trait Actions {
     // Using in add and update
     public function validate_options_are_shown($action) {
         $url = $this->getUrl($action);
-        $this->actingAs($this->user);
+
+        if($this->configuration['must_be_logged'])
+            $this->actingAs($this->user);
+
         $this->visit($url);
         foreach ($this->fields as $key => $array) {
             if(isset($array['options']) && is_array($array['options'])) {
@@ -88,7 +79,10 @@ trait Actions {
         }
 
         $url = $this->getUrl($action);
-        $this->actingAs($this->user);
+        
+        if($this->configuration['must_be_logged'])
+            $this->actingAs($this->user);
+
         $this->visit($url);
         foreach ($user_case as $key => $value) {
             $this->getInputMethod($key, $value);
@@ -125,7 +119,10 @@ trait Actions {
         $button = $action=='add' ? 'Crear' : 'Editar';
 
         $url = $this->getUrl($action);
-        $this->actingAs($this->user);
+
+        if($this->configuration['must_be_logged'])
+            $this->actingAs($this->user);
+
         $this->visit($url);
 
         if($action=='update') {
@@ -152,7 +149,9 @@ trait Actions {
         $button = $action=='add' ? 'Crear' : 'Editar';
 
         $url = $this->getUrl($action);
-        $this->actingAs($this->user);
+        
+        if($this->configuration['must_be_logged'])
+            $this->actingAs($this->user);
         
         $required_fields = $this->get_required_fields();
 
@@ -190,6 +189,10 @@ trait Actions {
 
     // Using in update
     public function check_if_another_user_cannot_enter($action) {
+        
+        if ($this->configuration['others_can_see'])
+            return;
+
         $user = $this->another_user;
         
         if($this->configuration['inside_store']) {
@@ -198,7 +201,9 @@ trait Actions {
 
         $url = $this->getUrl($action);
 
-        $this->actingAs($user);
+        if($this->configuration['must_be_logged'])
+            $this->actingAs($user);
+
         $this->get($url);
         try {
             $this->assertFalse($this->response->isOk());
@@ -213,7 +218,10 @@ trait Actions {
     // Using in update
     public function update_show_successfull_mesagge_and_is_saved($action, $user_cases) {
         $url = $this->getUrl($action);
-        $this->actingAs($this->user);
+        
+        if($this->configuration['must_be_logged'])
+            $this->actingAs($this->user);
+        
         $this->visit($url);
         foreach ($user_cases as $key => $value) {
             $this->getInputMethod($key, $value);
@@ -268,7 +276,10 @@ trait Actions {
     // Using in show
     public function check_that_all_fields_are_shown($action) {
         $url = $this->getUrl($action);
-        $this->actingAs($this->user);
+        
+        if($this->configuration['must_be_logged'])
+            $this->actingAs($this->user);
+        
         $this->visit($url);
 
         foreach ($this->fields as $field => $array) {
@@ -300,7 +311,10 @@ trait Actions {
             return;
 
         $url = $this->getUrl($action);
-        $this->actingAs($this->user);
+
+        if($this->configuration['must_be_logged'])
+            $this->actingAs($this->user);
+
         $this->visit($url);
     
         foreach ($functions as $function => $fields) {
@@ -322,7 +336,10 @@ trait Actions {
     // Using in index
     public function the_links_are_shown($action, $actions) {
         $url = $this->getUrl($action);
-        $this->actingAs($this->user);
+
+        if($this->configuration['must_be_logged'])
+            $this->actingAs($this->user);
+
         $this->visit($url);
     
         foreach ($actions as $action) {
@@ -340,7 +357,10 @@ trait Actions {
     // Using in index
     public function the_columns_exist($action, $columns) {
         $url = $this->getUrl($action);
-        $this->actingAs($this->user);
+
+        if($this->configuration['must_be_logged'])
+            $this->actingAs($this->user);
+
         $this->visit($url);
     
         foreach ($columns as $column) {
@@ -357,8 +377,15 @@ trait Actions {
 
     // Using in index (?? review)
     public function another_user_cannot_see_the_object($action) {
+        
+        if ($this->configuration['others_can_see'])
+            return;
+
         $url = $this->getUrl($action);
-        $this->actingAs($this->another_user);
+
+        if($this->configuration['must_be_logged'])
+            $this->actingAs($this->another_user);
+
         $this->visit($url);
         try {
             $this->dontSee($this->getUrl('show'));    
