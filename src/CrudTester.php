@@ -10,7 +10,29 @@ trait CrudTester {
     private $fields;
 
     public function addConfiguration(Array $configuration) {
+        
+        // Make default configuration
+        $default_configuration = [
+            'inside_store' => false,
+            'validate_relationship' => true,
+            'others_can_see' => false,
+            'url_base' => 'admin/{module}/',
+            'redirect_to_index' => true
+        ];
+        $configuration = array_merge($default_configuration, $configuration);
+
+        // Validation
+        if(
+            !isset($configuration['module']) ||
+            !isset($configuration['module_object']) ||
+            ($configuration['validate_relationship'] && !isset($configuration['object_relationship'])) ||
+            ($configuration['validate_relationship'] && !isset($configuration['function_relationship']))
+        )
+            throw new Exception("Error, necessary fields were not added.", 1);
+        
+        // Saving    
         $this->configuration = $configuration;
+
     }
 
     public function addFields(Array $fields) {
@@ -85,7 +107,6 @@ trait CrudTester {
         
         if (!$this->configuration['others_can_see']) {
             $this->another_user_cannot_see_the_object($action);
-            $this->inactive_objects_arent_shown($action);
         }
 
     }

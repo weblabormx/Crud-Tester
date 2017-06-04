@@ -102,7 +102,6 @@ trait Actions {
        
         
         if(
-            !isset($this->configuration['redirect_to_index']) || 
             $this->configuration['redirect_to_index']) 
         {
             try {
@@ -210,7 +209,7 @@ trait Actions {
         $this->actingAs($user);
         $this->get($url);
         try {
-            $this->assertResponseStatus(403);
+            $this->assertFalse($this->response->isOk());
         } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
             $this->fail("another user must not access to $url");
         }
@@ -367,27 +366,15 @@ trait Actions {
     public function another_user_cannot_see_the_object($action) {
         $url = $this->getUrl($action);
         $this->actingAs($this->another_user);
-        $this->visit($url)
-            ->dontSee($this->getUrl('show'));
+        $this->visit($url);
+        try {
+            $this->dontSee($this->getUrl('show'));    
+        } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+            $this->fail("Another user should not see the object.");
+        } 
+        
 
         echo "\n- another_user_cannot_see_the_object in $url checked\n";
-    }
-
-    // Using in index
-    public function inactive_objects_arent_shown($action) {
-        $url = $this->getUrl($action);
-        $this->actingAs($this->user);
-
-        $module = $this->configuration['module'];
-        $module = ucfirst($module);
-        $module = 'create'.$module;
-        $column = $this->configuration['object_relationship'];
-        $new = $this->$module([$column.'_id' => $this->$column->id, 'active' => false]); // new object
-
-        $this->visit($url);
-        $this->dontSee($this->getUrl('show', $new->id));
-
-        echo "\n- inactive_objects_arent_shown in $url checked\n";
     }
 
     // Using in add
