@@ -36,6 +36,8 @@ trait Actions {
         $this->visit($url);
 
         foreach ($this->fields as $key => $array) {
+            if(!in_array($action, $array['show']))
+                continue;
             try {
                 $this->see('name="'.$key.'"');
             } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
@@ -386,7 +388,8 @@ trait Actions {
         if($this->configuration['must_be_logged'])
             $this->actingAs($this->another_user);
 
-        $this->visit($url);
+        $this->visit($url)
+            ->seePageIs($url);
         try {
             $this->dontSee($this->getUrl('show'));    
         } catch (\PHPUnit_Framework_ExpectationFailedException $e) {

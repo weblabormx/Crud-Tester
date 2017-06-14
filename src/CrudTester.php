@@ -34,7 +34,7 @@ trait CrudTester {
         
         if(isset($links))
             $configuration['links'] = $links;
-        //dd($configuration['links']);
+
         // Validation
         if(
             !isset($configuration['module']) ||
@@ -57,6 +57,10 @@ trait CrudTester {
 
     public function addFields(Array $fields) {
         $this->fields = $fields;
+        foreach ($this->fields as $key => &$value) {
+            if(!isset($value['show']))
+                $value['show'] = ['add', 'update'];
+        }
     }
 
     public function commonStart($action) {
