@@ -291,6 +291,8 @@ trait Actions {
             try {
                 $this->see($value);
             } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+                if(!is_numeric($value))
+                    $this->fail("'{$value}' text ({$field}) should appear in $url");
                 try {
                     $value = number_format($value, 0);
                     $this->see($value);
@@ -388,8 +390,7 @@ trait Actions {
         if($this->configuration['must_be_logged'])
             $this->actingAs($this->another_user);
 
-        $this->visit($url)
-            ->seePageIs($url);
+        $this->visit($url);
         try {
             $this->dontSee($this->getUrl('show'));    
         } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
