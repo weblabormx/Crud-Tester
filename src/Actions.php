@@ -285,6 +285,8 @@ trait Actions {
         $this->visit($url);
 
         foreach ($this->fields as $field => $array) {
+            if(!$array['required'])
+                continue;
             $value = $this->configuration['module_object']->$field;
             if(isset($array['options'][$value]))
                 $value = $array['options'][$value];
