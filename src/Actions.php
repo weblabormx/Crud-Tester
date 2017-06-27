@@ -350,6 +350,8 @@ trait Actions {
                 $relationship = $fields;
                 $fields = [];
             }
+            if($this->configuration['module_object']->$relationship()->count() <= 0)
+                $this->fail("'{$relationship}' relationship need to have data to test fields");
             try {
                 $this->see('<div role="tabpanel" class="tab-pane" id="'.$relationship.'">');
             } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
@@ -360,8 +362,6 @@ trait Actions {
                 }
             }
             foreach ($fields as $field) {
-                if($this->configuration['module_object']->$relationship()->count() <= 0)
-                    $this->fail("'{$relationship}' relationship need to have data to test fields");   
                 $value = $this->configuration['module_object']->$relationship()->first()->$field;
                 $this->see($value);
             }
