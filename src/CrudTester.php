@@ -98,12 +98,14 @@ trait CrudTester {
         $this->check_if_another_user_cannot_enter($action);
     }
 
-    public function show($functions = []) {
+    public function show($attributes = [], $relationships = []) {
         $action = 'show';
         $this->commonStart($action);
         $this->check_that_all_fields_are_shown($action);
         $this->check_that_a_specified_function_object_is_shown($action);
         $this->check_if_another_user_cannot_enter($action);
+        $this->check_attributes_are_used($action, $attributes);
+        $this->check_relationships_on_view($action, $relationships);
     }
 
     public function index($columns= [], $actions = []) {

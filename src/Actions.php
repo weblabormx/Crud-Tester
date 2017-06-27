@@ -309,6 +309,69 @@ trait Actions {
     }
 
     // Using in show
+    public function check_attributes_are_used($action, $attributes) {
+        $url = $this->getUrl($action);
+        
+        if($this->configuration['must_be_logged'])
+            $this->actingAs($this->user);
+        
+        $this->visit($url);
+
+        foreach ($attributes as $attribute) {
+            try {
+                $this->see($attribute);
+            } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+                if(!is_numeric($attribute))
+                    $this->fail("'{$attribute}' value should appear in $url");
+                try {
+                    $attribute = number_format($attribute, 0);
+                    $this->see($attribute);
+                } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+                    $this->fail("'{$attribute}' value should appear in $url");
+                }
+            }
+            echo "\n-- checking that $attribute is in $url ready";
+        }
+
+        echo "\n\n- check_attributes_are_used in $url checked\n";
+    }
+
+    // Using in show
+    public function check_relationships_on_view($action, $relationship) {
+        $url = $this->getUrl($action);
+        
+        if($this->configuration['must_be_logged'])
+            $this->actingAs($this->user);
+        
+        $this->visit($url);
+
+        foreach ($relationship as $relationship => $fields) {
+            if(!is_array($fields)) {
+                $relationship = $fields;
+                $fields = [];
+            }
+            try {
+                $this->see('<div role="tabpanel" class="tab-pane" id="'.$relationship.'">');
+            } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+                try {
+                    $this->see('<div role="tabpanel" class="tab-pane active" id="'.$relationship.'">');
+                } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+                    $this->fail("'{$relationship}' relationship should be added in $url");
+                }
+            }
+            foreach ($fields as $field) {
+                if($this->configuration['module_object']->$relationship()->count() <= 0)
+                    $this->fail("'{$relationship}' relationship need to have data to test fields");   
+                $value = $this->configuration['module_object']->$relationship()->first()->$field;
+                $this->see($value);
+            }
+            echo "\n-- checking that $relationship relationship is in $url ready";
+        }
+
+        echo "\n\n- check_relationships_on_view in $url checked\n";
+    }
+
+    // Using in show
     public function check_that_a_specified_function_object_is_shown($action) {
         $functions = $this->get_functions_of_relationships();
         $this->add_relationship_objects();
