@@ -319,7 +319,7 @@ trait Actions {
 
         foreach ($attributes as $attribute) {
             try {
-                $this->see($attribute);
+                $this->see($this->configuration['module_object']->$attribute);
             } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
                 if(!is_numeric($attribute))
                     $this->fail("'{$attribute}' value should appear in $url");
