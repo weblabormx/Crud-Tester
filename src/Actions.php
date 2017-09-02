@@ -40,7 +40,7 @@ trait Actions {
                 continue;
             try {
                 $this->see('name="'.$key.'"');
-            } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+            } catch (\Exception $e) {
                 $this->fail("$key field doesnt exist in $url");
             }
             echo "\n-- '$key' exists in $url ready";
@@ -62,7 +62,7 @@ trait Actions {
                     try {
                         $this->see('option value="'.$key.'"');
                         $this->see($option.'</option>');
-                    } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+                    } catch (\Exception $e) {
                         $this->fail("$key need to have $option as option in $url");
                     }
                    
@@ -98,7 +98,7 @@ trait Actions {
         {
             try {
                $this->seePageIs($this->getUrl('index'));
-            } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+            } catch (\Exception $e) {
                 $this->fail("When saving should redirect to index page");
             }
         }
@@ -137,7 +137,7 @@ trait Actions {
 
         try {
            $this->see('Los siguientes errores fueron encontrados');
-        } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+        } catch (\Exception $e) {
             $this->fail("'Los siguientes errores fueron encontrados' text should appear if the fields are empty in $url");
         }
 
@@ -171,7 +171,7 @@ trait Actions {
             $this->press($button);
             try {
                 $this->see('Los siguientes errores fueron encontrados');
-            } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+            } catch (\Exception $e) {
                 $this->fail("'Los siguientes errores fueron encontrados' text should be shown without $key_parent field in $url");
             }
 
@@ -179,7 +179,7 @@ trait Actions {
 
             try {
                 $this->see($value_parent['title'].' es requerido');
-            } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+            } catch (\Exception $e) {
                 $this->fail("'".$value_parent['title']." es requerido' text should be shown in $url");
             }
 
@@ -209,7 +209,7 @@ trait Actions {
         $this->get($url);
         try {
             $this->assertFalse($this->response->isOk());
-        } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+        } catch (\Exception $e) {
             $this->fail("another user must not access to $url");
         }
             
@@ -233,7 +233,7 @@ trait Actions {
 
         try {
            $this->see('Editado correctamente');
-        } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+        } catch (\Exception $e) {
             $this->fail("'Editado correctamente' text should appear after submit in $url");
         }
         echo "\n-- successfull message is shown ready";
@@ -244,7 +244,7 @@ trait Actions {
         foreach ($new_user_cases as $key => $value) {
             try {
                $this->see($value);
-            } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+            } catch (\Exception $e) {
                 $this->fail("'$value' was not shown in $url ");
             }
         }
@@ -292,13 +292,13 @@ trait Actions {
                 $value = $array['options'][$value];
             try {
                 $this->see($value);
-            } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+            } catch (\Exception $e) {
                 if(!is_numeric($value))
                     $this->fail("'{$value}' text ({$field}) should appear in $url");
                 try {
                     $value = number_format($value, 0);
                     $this->see($value);
-                } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+                } catch (\Exception $e) {
                     $this->fail("'{$value}' text ({$field}) should appear in $url");
                 }
             }
@@ -320,13 +320,13 @@ trait Actions {
         foreach ($attributes as $attribute) {
             try {
                 $this->see($this->configuration['module_object']->$attribute);
-            } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+            } catch (\Exception $e) {
                 if(!is_numeric($attribute))
                     $this->fail("'{$attribute}' value should appear in $url");
                 try {
                     $attribute = number_format($attribute, 0);
                     $this->see($attribute);
-                } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+                } catch (\Exception $e) {
                     $this->fail("'{$attribute}' value should appear in $url");
                 }
             }
@@ -350,14 +350,15 @@ trait Actions {
                 $relationship = $fields;
                 $fields = [];
             }
+            $module = rtrim($relationship, 's');
             if($this->configuration['module_object']->$relationship()->count() <= 0)
                 $this->fail("'{$relationship}' relationship need to have data to test fields");
             try {
-                $this->see('<div role="tabpanel" class="tab-pane" id="'.$relationship.'">');
-            } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+                $this->see('<div role="tabpanel" class="tab-pane" id="'.$module.'">');
+            } catch (\Exception $e) {
                 try {
-                    $this->see('<div role="tabpanel" class="tab-pane active" id="'.$relationship.'">');
-                } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+                    $this->see('<div role="tabpanel" class="tab-pane active" id="'.$module.'">');
+                } catch (\Exception $e) {
                     $this->fail("'{$relationship}' relationship should be added in $url");
                 }
             }
@@ -391,7 +392,7 @@ trait Actions {
                 foreach ($fields as $field) {
                     try {
                        $this->see($object->$field);
-                    } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+                    } catch (\Exception $e) {
                         $this->fail("'".$object->$field."' text ({$function}->{$field}) should appear in $url");
                     }
                     echo "\n-- checking that $field of $function is in $url ready";
@@ -414,7 +415,7 @@ trait Actions {
         foreach ($actions as $action) {
             try {
                $this->see($this->getUrl($action, null, null, true));
-            } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+            } catch (\Exception $e) {
                 $this->fail("'".$this->getUrl($action)."' url ({$action}) should appear in $url");
             }           
             echo "\n-- checking that $action link is in $url ready";
@@ -435,7 +436,7 @@ trait Actions {
         foreach ($columns as $column) {
             try {
                $this->see($column);
-            } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+            } catch (\Exception $e) {
                 $this->fail("'{$column}' text should appear in $url");
             } 
             echo "\n-- checking that $column column is in $url ready";
@@ -458,7 +459,7 @@ trait Actions {
         $this->visit($url);
         try {
             $this->dontSee($this->getUrl('show'));    
-        } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+        } catch (\Exception $e) {
             $this->fail("Another user should not see the object.");
         } 
         
@@ -489,7 +490,7 @@ trait Actions {
 
             try {
                 $this->assertEquals($value, $last->$function()->pluck($function.'.id')->toArray());
-            } catch (\PHPUnit_Framework_ExpectationFailedException $e) {
+            } catch (\Exception $e) {
                 $this->fail("The values of '{$name}' should be saved in $url");
             } 
             
