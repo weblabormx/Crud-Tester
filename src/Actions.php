@@ -255,21 +255,19 @@ trait Actions {
 
     // Using in remove
     public function remove_show_successfull_mesagge_and_is_saved($action) {
-        if( !$this->configuration['validate_relationship'])
-            return;
-        $count = $this->{$this->configuration['object_relationship']}->{$this->configuration['function_relationship']}()->count();
-        $count--;
+        if( $this->configuration['validate_relationship']) {
+            $count = $this->{$this->configuration['object_relationship']}->{$this->configuration['function_relationship']}()->count();
+            $count--;
+        }
 
-        $this->call('DELETE', $action, []);
-
-        /*$url = $this->getUrl($action);
+        $url = $this->getUrl($action);
         $this->actingAs($this->user);
-        $this->visit($url);
-        $this->press('Eliminar')
-             ->see('Eliminado correctamente');
-        echo "\n-- successfull message is shown ready";*/
+        $this->call('DELETE', $url);
+        $this->assertResponseStatus(302); // Redirection made
 
-        $this->assertEquals($count, $this->{$this->configuration['object_relationship']}->{$this->configuration['function_relationship']}()->first()->active);
+        if( $this->configuration['validate_relationship'] ) {
+            $this->assertEquals($count, $this->{$this->configuration['object_relationship']}->{$this->configuration['function_relationship']}()->count());
+        }
         echo "\n-- cheking that object was created successfully ready";
 
         echo "\n\n- remove_show_successfull_mesagge_and_is_saved checked\n";
